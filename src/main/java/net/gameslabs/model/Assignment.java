@@ -1,10 +1,8 @@
 package net.gameslabs.model;
 
 import assignment.api.Item;
-import assignment.events.GetItemEvent;
-import assignment.events.GetPlayerInventory;
-import assignment.events.GiveItemEvent;
-import assignment.events.RemoveItemEvent;
+import assignment.events.*;
+import assignment.model.Ores;
 import net.gameslabs.api.Component;
 import net.gameslabs.api.ComponentRegistry;
 import net.gameslabs.api.Player;
@@ -31,10 +29,44 @@ public class Assignment {
 
     public final void run() {
         runXpEvents();
-
         runInventoryEvents();
+        runPlayerMiningEvents();
 
         registry.unload();
+    }
+
+    private void runPlayerMiningEvents() {
+        playerMinesRockEvent(Ores.COPPER);
+        playerMinesRockEvent(Ores.COPPER);
+        log("try to mine coal");
+        playerMinesRockEvent(Ores.COAL); // level 3 cannot mine
+
+        // Check
+        if (getPlayerSkillLevel(mainPlayer, Skill.MINING) != 3) throw new AssignmentFailed("Mining XP should be 3");
+
+        playerMinesRockEvent(Ores.COPPER);
+        playerMinesRockEvent(Ores.COPPER);
+        log("try to mine coal");
+        playerMinesRockEvent(Ores.COAL); // level 5 can mine
+
+        // Check
+        if (getPlayerSkillLevel(mainPlayer, Skill.MINING) != 8) throw new AssignmentFailed("Mining XP should be 8");
+    }
+
+    private void playerMinesRockEvent(Ores oreType) {
+        int playerMiningLevel = getPlayerSkillLevel(mainPlayer, Skill.MINING);
+
+        PlayerMiningEvent miningEvent = new PlayerMiningEvent(mainPlayer, oreType, playerMiningLevel);
+        registry.sendEvent(miningEvent);
+
+        if (miningEvent.isAbleToMineOre()) {
+            registry.sendEvent(new GiveXpEvent(mainPlayer, Skill.MINING, miningEvent.getXpEarned()));
+
+            playerMiningLevel = getPlayerSkillLevel(mainPlayer, Skill.MINING);
+            log("Player Mine Event", mainPlayer, miningEvent.getXpEarned() + " xp earned", "Level after xp gain: " + playerMiningLevel);
+        } else {
+            log("Cannot mine " + oreType.toString() + " yet");
+        }
     }
 
     private void runXpEvents() {
