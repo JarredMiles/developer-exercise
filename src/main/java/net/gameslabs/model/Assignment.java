@@ -26,19 +26,22 @@ public class Assignment {
     public final void run() {
         registry.sendEvent(new GiveXpEvent(mainPlayer, Skill.CONSTRUCTION, 25));
         registry.sendEvent(new GiveXpEvent(mainPlayer, Skill.EXPLORATION, 25));
-        GetPlayerLevel getPlayerLevel = new GetPlayerLevel(mainPlayer, Skill.CONSTRUCTION);
-        log("Player level", mainPlayer, getPlayerLevel.getLevel());
+
+        int playerConstructionLevel = getPlayerSkillLevel(mainPlayer, Skill.CONSTRUCTION);
+        log("Player level", mainPlayer, playerConstructionLevel);
+
         runChecks();
+
         registry.unload();
     }
 
     private void runChecks() {
-        if (getLevel(Skill.EXPLORATION) != 1) throw new AssignmentFailed("Exploration XP should be set to level 1");
-        if (getLevel(Skill.CONSTRUCTION) != 2) throw new AssignmentFailed("Construction XP should be set to level 2");
+        if (getPlayerSkillLevel(mainPlayer, Skill.EXPLORATION) != 1) throw new AssignmentFailed("Exploration XP should be set to level 1");
+        if (getPlayerSkillLevel(mainPlayer, Skill.CONSTRUCTION) != 2) throw new AssignmentFailed("Construction XP should be set to level 2");
     }
 
-    private int getLevel(Skill skill) {
-        GetPlayerLevel getPlayerLevel = new GetPlayerLevel(mainPlayer, skill);
+    private int getPlayerSkillLevel(Player player, Skill skill) {
+        GetPlayerLevel getPlayerLevel = new GetPlayerLevel(player, skill);
         registry.sendEvent(getPlayerLevel);
         return getPlayerLevel.getLevel();
     }

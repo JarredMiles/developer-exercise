@@ -2,6 +2,7 @@ package assignment.components;
 
 import net.gameslabs.api.Component;
 import net.gameslabs.events.GiveXpEvent;
+import net.gameslabs.model.Skill;
 
 public class MyXPBoosterComponent extends Component {
 
@@ -11,7 +12,12 @@ public class MyXPBoosterComponent extends Component {
     }
 
     private void onGiveXP(GiveXpEvent event) {
-        // TODO: complete me
+        Skill skill = event.getSkill();
+        if (skill == Skill.CONSTRUCTION)
+        {
+            int doubleXpFromEvent = event.getXp() * 2;
+            event.setXp(doubleXpFromEvent);
+        }
     }
 
     @Override
