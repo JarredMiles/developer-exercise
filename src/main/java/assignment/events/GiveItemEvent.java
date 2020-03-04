@@ -9,15 +9,15 @@ import java.util.List;
 
 public class GiveItemEvent extends PlayerEvent {
     private Item item;
+    private List<Item> playerInventory;
 
     public GiveItemEvent(Player player, String itemId, String name, int amount) {
         super(player);
         this.item =  ItemImplem.newItem(itemId, name, amount);
+        this.playerInventory = player.getInventory();
     }
 
     public void giveItem() {
-        List<Item> playerInventory = getPlayer().getInventory();
-
         if (playerInventory.contains(item)) {
             int itemIndex = playerInventory.indexOf(item);
             Item existingItem = playerInventory.get(itemIndex);

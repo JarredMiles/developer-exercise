@@ -9,6 +9,7 @@ public class PlayerMiningEvent extends PlayerEvent {
     private int miningLevel;
     private int xpEarned;
     private boolean ableToMineOre;
+    private boolean shouldGiveGem;
 
     public PlayerMiningEvent(Player player, Ores oreType, int playerMiningLevel) {
         super(player);
@@ -25,4 +26,7 @@ public class PlayerMiningEvent extends PlayerEvent {
 
     public boolean isAbleToMineOre() { return ableToMineOre; }
     public void setAbleToMineOre(boolean ableToMineOre) { this.ableToMineOre = ableToMineOre; }
+
+    public void setShouldGiveGem(boolean shouldGiveGem) { this.shouldGiveGem = shouldGiveGem; }
+    public boolean shouldGiveGem() { return this.shouldGiveGem; }
 }

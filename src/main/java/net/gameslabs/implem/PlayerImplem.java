@@ -40,13 +40,12 @@ public class PlayerImplem implements Player {
         if (o == null || getClass() != o.getClass()) return false;
         PlayerImplem that = (PlayerImplem) o;
         return Objects.equals(id, that.id) &&
-                Objects.equals(name, that.name) &&
-                Objects.equals(inventory, that.inventory);
+                Objects.equals(name, that.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, inventory);
+        return Objects.hash(id, name);
     }
 
     @Override

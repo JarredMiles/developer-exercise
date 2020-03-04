@@ -32,38 +32,54 @@ public class Assignment {
         runInventoryEvents();
         runPlayerMiningEvents();
 
+        // check - loop until we have gotten a gem from mining
+        do {
+            playerMinesRockEvent(mainPlayer, Ores.COPPER);
+        }
+        while (getPlayerItem(mainPlayer, "ruby") == null);
+
+        // check
+        if (getPlayerItem(mainPlayer, "ruby").getAmount() < 1) throw new AssignmentFailed("Player should have a few gems in inventory by now..");
+
         registry.unload();
     }
 
     private void runPlayerMiningEvents() {
-        playerMinesRockEvent(Ores.COPPER);
-        playerMinesRockEvent(Ores.COPPER);
+        playerMinesRockEvent(mainPlayer, Ores.COPPER);
+        playerMinesRockEvent(mainPlayer, Ores.COPPER);
         log("try to mine coal");
-        playerMinesRockEvent(Ores.COAL); // level 3 cannot mine
+        playerMinesRockEvent(mainPlayer, Ores.COAL); // level 3 cannot mine
 
         // Check
         if (getPlayerSkillLevel(mainPlayer, Skill.MINING) != 3) throw new AssignmentFailed("Mining XP should be 3");
 
-        playerMinesRockEvent(Ores.COPPER);
-        playerMinesRockEvent(Ores.COPPER);
+        playerMinesRockEvent(mainPlayer, Ores.COPPER);
+        playerMinesRockEvent(mainPlayer, Ores.COPPER);
         log("try to mine coal");
-        playerMinesRockEvent(Ores.COAL); // level 5 can mine
+        playerMinesRockEvent(mainPlayer, Ores.COAL); // level 5 can mine
 
         // Check
         if (getPlayerSkillLevel(mainPlayer, Skill.MINING) != 8) throw new AssignmentFailed("Mining XP should be 8");
     }
 
-    private void playerMinesRockEvent(Ores oreType) {
-        int playerMiningLevel = getPlayerSkillLevel(mainPlayer, Skill.MINING);
+    private void playerMinesRockEvent(Player player, Ores oreType) {
+        int playerMiningLevel = getPlayerSkillLevel(player, Skill.MINING);
 
-        PlayerMiningEvent miningEvent = new PlayerMiningEvent(mainPlayer, oreType, playerMiningLevel);
+        PlayerMiningEvent miningEvent = new PlayerMiningEvent(player, oreType, playerMiningLevel);
         registry.sendEvent(miningEvent);
 
-        if (miningEvent.isAbleToMineOre()) {
-            registry.sendEvent(new GiveXpEvent(mainPlayer, Skill.MINING, miningEvent.getXpEarned()));
+        if (!miningEvent.isCancelled()) {
+            if (miningEvent.isAbleToMineOre()) {
+                registry.sendEvent(new GiveXpEvent(player, Skill.MINING, miningEvent.getXpEarned()));
 
-            playerMiningLevel = getPlayerSkillLevel(mainPlayer, Skill.MINING);
-            log("Player Mine Event", mainPlayer, miningEvent.getXpEarned() + " xp earned", "Level after xp gain: " + playerMiningLevel);
+                playerMiningLevel = getPlayerSkillLevel(player, Skill.MINING);
+                log("Player Mine Event", player, miningEvent.getXpEarned() + " xp earned", "Level after xp gain: " + playerMiningLevel);
+            }
+
+            if (miningEvent.shouldGiveGem()) {
+                registry.sendEvent(new GiveItemEvent(player, "ruby", "Ruby", 1));
+                log("Player was given a gem");
+            }
         } else {
             log("Cannot mine " + oreType.toString() + " yet");
         }

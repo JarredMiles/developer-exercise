@@ -76,5 +76,8 @@ Here is the list of tasks you need to achieve:
     Add new checks in Assignment.java to run checks on the features you have added.
 - Add a unique feature and add this feature to the README with a description of what it is supposed to do and checks in Assignment.
 
+# Added Feature
+Ability for player to get gem randomly while mining and added to inventory
+
 ## Publishing
 Fork this repository and add scipio3000 to the repository. PM scipio3000 with the link to your repository once you are done with the assignment
